@@ -18,7 +18,7 @@ from app.services import (
     get_achievements,
     get_level_title,
     get_modules_with_progress,
-    get_reward_points_for_module_order,
+    get_reward_points_for_module_slug,
     serialize_progress,
 )
 
@@ -153,8 +153,7 @@ def submit_module(
         progress.best_score = 100
 
         if not was_completed:
-            completed_count = sum(1 for item in current_user.module_progresses if item.completed)
-            earned_points = get_reward_points_for_module_order(completed_count - 1)
+            earned_points = get_reward_points_for_module_slug(module_slug)
             progress.earned_points = earned_points
             current_user.total_points = (current_user.total_points or 0) + earned_points
         else:

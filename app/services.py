@@ -108,7 +108,8 @@ def get_achievements(user: User, progresses: list[ModuleProgress]) -> list[Achie
     return achievements
 
 
-def get_reward_points_for_module_order(module_index: int) -> int:
-    if 0 <= module_index < len(ACHIEVEMENT_DEFS):
-        return ACHIEVEMENT_DEFS[module_index]["reward_points"]
+def get_reward_points_for_module_slug(module_slug: str) -> int:
+    module = next((item for item in MODULES if item.slug == module_slug), None)
+    if module is not None:
+        return module.reward_points
     return 0

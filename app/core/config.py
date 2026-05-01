@@ -40,15 +40,13 @@ def get_cors_origins() -> list[str]:
 class Settings:
     database_url: str | None = normalize_database_url(
         os.getenv("SUPABASE_DATABASE_URL")
-        or os.getenv("DATABASE_URL")
-        # "postgresql+psycopg://postgres:postgres@localhost:5432/postgres",
     )
-    jwt_secret_key: str = os.getenv("JWT_SECRET_KEY", "change-me-secret")
+    jwt_secret_key: str = os.getenv("JWT_SECRET_KEY")
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
-    admin_email: str = os.getenv("ADMIN_EMAIL", "admin@cifrograd.ru").strip().lower()
-    admin_password: str = os.getenv("ADMIN_PASSWORD", "Admin12345!")
-    admin_display_name: str = os.getenv("ADMIN_DISPLAY_NAME", "Администратор")
+    admin_email: str = os.getenv("ADMIN_EMAIL")
+    admin_password: str = os.getenv("ADMIN_PASSWORD")
+    admin_display_name: str = os.getenv("ADMIN_DISPLAY_NAME")
     admin_emails: list[str] = [
         admin_email,
         *[

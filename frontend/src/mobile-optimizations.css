@@ -1,0 +1,735 @@
+/* Mobile-First Responsive Design Optimizations */
+/* Breakpoints: 320px (mobile), 480px (small mobile), 768px (tablet), 1024px (desktop) */
+
+/* ============================================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ============================================================ */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase interactive element sizes for touch */
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"],
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+    padding: max(12px, 5vw) max(16px, 5vw);
+  }
+
+  /* Improve spacing between interactive elements */
+  button + button,
+  a + a {
+    margin-left: 8px;
+  }
+
+  /* Remove hover states that don't apply to touch */
+  button:hover,
+  a:hover {
+    opacity: 1;
+  }
+
+  /* Add active state feedback */
+  button:active,
+  a:active {
+    opacity: 0.7;
+  }
+}
+
+/* ============================================================
+   SMALL MOBILE (320px - 479px)
+   ============================================================ */
+@media (max-width: 479px) {
+  :root {
+    font-size: 14px;
+  }
+
+  body {
+    min-width: 320px;
+    overflow-x: hidden;
+  }
+
+  .shell {
+    padding: 16px 12px 32px;
+    max-width: 100%;
+  }
+
+  .topbar {
+    padding: 12px 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .brand-text {
+    font-size: 1.25rem;
+  }
+
+  /* Responsive typography */
+  h1 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    line-height: 1.2;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  /* Stack layouts on small mobile */
+  .grid-2,
+  .flex-row {
+    display: flex !important;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Full width inputs and buttons */
+  input,
+  textarea,
+  select,
+  .btn {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Reduce padding on small screens */
+  .card,
+  .modal,
+  .container {
+    padding: 12px;
+  }
+
+  /* Hide elements that take too much space */
+  .desktop-only {
+    display: none;
+  }
+
+  /* Optimize images */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  /* Reduce icon sizes */
+  .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Hamburger menu for mobile */
+  .menu-toggle {
+    display: block;
+  }
+
+  /* Optimize modals for mobile */
+  .modal {
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+/* ============================================================
+   MEDIUM MOBILE (480px - 767px)
+   ============================================================ */
+@media (min-width: 480px) and (max-width: 767px) {
+  .shell {
+    padding: 20px 16px 40px;
+  }
+
+  .topbar {
+    padding: 14px 20px;
+  }
+
+  /* Allow 2-column grids where possible */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  input,
+  textarea,
+  .btn {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* ============================================================
+   TABLET (768px - 1023px)
+   ============================================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .shell {
+    padding: 24px 20px 48px;
+    max-width: 100%;
+  }
+
+  .topbar {
+    padding: 14px 24px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .sidebar {
+    position: static;
+    width: auto;
+    max-width: 280px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .modal {
+    max-width: 90vw;
+  }
+}
+
+/* ============================================================
+   LANDSCAPE MODE OPTIMIZATIONS
+   ============================================================ */
+@media (max-height: 500px) and (orientation: landscape) {
+  .topbar {
+    min-height: 56px;
+    padding: 8px 16px;
+  }
+
+  .shell {
+    padding: 12px 16px 24px;
+  }
+
+  h1,
+  h2 {
+    margin: 8px 0;
+  }
+
+  .spacing-large {
+    gap: 8px;
+  }
+}
+
+/* ============================================================
+   NOTCH / SAFE AREA SUPPORT
+   ============================================================ */
+@supports (padding: max(0px)) {
+  body {
+    padding-top: max(0px, env(safe-area-inset-top));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+
+  .topbar {
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+}
+
+/* ============================================================
+   HIGH DPI / RETINA DISPLAYS
+   ============================================================ */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  img {
+    image-rendering: -webkit-optimize-contrast;
+  }
+
+  /* Reduce border width on high DPI to avoid appearing too thick */
+  border {
+    border-width: 0.5px;
+  }
+}
+
+/* ============================================================
+   DARK MODE SUPPORT
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================================ */
+/* Optimize scrolling performance */
+.scrollable {
+  -webkit-overflow-scrolling: touch;
+  overflow: auto;
+}
+
+/* GPU acceleration for animations */
+.animated,
+.transition {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Reduce motion for background images */
+@media (prefers-reduced-motion: no-preference) {
+  .parallax {
+    background-attachment: fixed;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE IMAGES
+   ============================================================ */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Lazy loading support */
+img[loading="lazy"] {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ============================================================
+   OPTIMIZED FORM INPUTS FOR MOBILE
+   ============================================================ */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  font-size: 16px; /* Prevents iOS zoom */
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-width: 100%;
+  appearance: none; /* Remove iOS default styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M0 3l6 6 6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 32px;
+}
+
+/* ============================================================
+   MOBILE NAVIGATION PATTERNS
+   ============================================================ */
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mobile-nav {
+    display: block;
+  }
+
+  .desktop-nav {
+    display: none;
+  }
+
+  /* Bottom navigation bar */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 56px;
+    background: #fff;
+    border-top: 1px solid #e0e0e0;
+    z-index: 999;
+  }
+
+  /* Account for bottom nav when scrolling */
+  body {
+    padding-bottom: 56px;
+  }
+}
+
+/* ============================================================
+   TEXT OPTIMIZATION
+   ============================================================ */
+/* Improve text readability */
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent text from being selectable on mobile to avoid issues */
+@media (hover: none) and (pointer: coarse) {
+  *:not(input):not(textarea) {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* ============================================================
+   VIEWPORT FIT FOR NOTCHED DEVICES
+   ============================================================ */
+/* Already handled in HTML viewport meta tag */
+
+/* ============================================================
+   MODULE HERO CARDS - MOBILE OPTIMIZATION
+   ============================================================ */
+
+/* Hero cards on small mobile */
+@media (max-width: 479px) {
+  .password-part-hero.hero-card,
+  .password-hero-card {
+    height: auto;
+    min-height: auto;
+    padding: 0;
+    border-radius: 24px;
+    overflow: visible;
+  }
+
+  .password-hero-inner {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: auto;
+    gap: 12px;
+    padding: 20px 16px;
+  }
+
+  .password-part-hero .hero-content {
+    padding-top: 0;
+    max-width: 100%;
+    gap: 12px;
+  }
+
+  .password-part-hero .back-button {
+    position: static;
+    width: 100%;
+    min-height: 44px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+
+  .password-part-hero .safety-part-hero-copy h2 {
+    font-size: 1.5rem;
+    margin: 0 0 4px;
+  }
+
+  .password-part-hero .safety-part-hero-copy .hero-text {
+    font-size: 0.95rem;
+    max-width: 100%;
+  }
+
+  .password-learn-card {
+    width: 100%;
+    grid-template-columns: 50px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px;
+    margin-top: 12px;
+  }
+
+  .password-learn-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  .password-learn-card strong {
+    font-size: 0.9rem;
+  }
+
+  .password-learn-card p {
+    font-size: 0.85rem;
+  }
+
+  .password-part-hero .hero-badge {
+    position: static;
+    width: fit-content;
+    margin-bottom: 8px;
+  }
+
+  .password-part-hero .safety-part-hero-art,
+  .password-hero-card .hero-visual {
+    height: 200px;
+    min-height: 200px;
+    margin-top: 0;
+    transform: none;
+    justify-self: center;
+  }
+
+  .password-part-hero .hero-mascot,
+  .password-hero-card .hero-mascot {
+    height: 180px;
+    max-height: 180px;
+    width: auto;
+    transform: none;
+    margin-top: 0;
+  }
+
+  .password-part-hero .hero-mascot.hero-mascot-compact,
+  .password-hero-card .hero-mascot.hero-mascot-compact {
+    height: 160px;
+    max-height: 160px;
+    transform: none;
+  }
+
+  .password-part-hero .visual-bg,
+  .password-hero-card .visual-bg {
+    display: none;
+  }
+
+  .password-part-hero .decor,
+  .password-hero-card .decor {
+    display: none;
+  }
+}
+
+/* Hero cards on medium mobile (480px - 767px) */
+@media (min-width: 480px) and (max-width: 767px) {
+  .password-part-hero.hero-card,
+  .password-hero-card {
+    height: auto;
+    min-height: auto;
+    padding: 0;
+  }
+
+  .password-hero-inner {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    height: auto;
+    padding: 24px 20px;
+  }
+
+  .password-part-hero .hero-content {
+    padding-top: 0;
+  }
+
+  .password-part-hero .safety-part-hero-copy h2 {
+    font-size: 1.75rem;
+  }
+
+  .password-part-hero .hero-mascot,
+  .password-hero-card .hero-mascot {
+    height: 240px;
+    max-height: 240px;
+    transform: none;
+  }
+
+  .password-part-hero .hero-mascot.hero-mascot-compact,
+  .password-hero-card .hero-mascot.hero-mascot-compact {
+    height: 220px;
+    max-height: 220px;
+    transform: none;
+  }
+
+  .password-part-hero .safety-part-hero-art,
+  .password-hero-card .hero-visual {
+    height: 250px;
+    min-height: 250px;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   MODULE START IMAGES - MOBILE OPTIMIZATION
+   ============================================================ */
+
+@media (max-width: 479px) {
+  .module-overview-card-illustrated {
+    gap: 12px;
+    padding: 8px;
+  }
+
+  .module-overview-image {
+    min-height: 280px;
+    max-height: 350px;
+    width: 100%;
+    object-fit: contain;
+    border-radius: 16px;
+  }
+
+  .module-overview-start-button {
+    max-width: 100%;
+    min-height: 48px;
+    padding: 12px 20px;
+    border-radius: 16px;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .module-overview-card-illustrated {
+    gap: 16px;
+    padding: 12px;
+  }
+
+  .module-overview-image {
+    min-height: 320px;
+    max-height: 400px;
+    object-fit: contain;
+  }
+
+  .module-overview-start-button {
+    max-width: 100%;
+    min-height: 52px;
+  }
+}
+
+/* ============================================================
+   WELCOME COMICS - MOBILE OPTIMIZATION
+   ============================================================ */
+
+@media (max-width: 479px) {
+  .safety-comic-panel {
+    gap: 16px;
+    padding: 16px 12px 24px;
+  }
+
+  .safety-comic-head h3 {
+    font-size: 1.4rem;
+    margin: 0 0 8px;
+  }
+
+  .safety-comic-head p {
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  .safety-comic-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .safety-comic-card {
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .safety-comic-card.single {
+    width: 100%;
+    border-radius: 16px;
+    min-height: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .safety-comic-card img,
+  .safety-comic-card.single img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    display: block;
+    object-fit: contain;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .safety-comic-panel {
+    gap: 20px;
+    padding: 20px 16px 28px;
+  }
+
+  .safety-comic-head h3 {
+    font-size: 1.6rem;
+    margin: 0 0 10px;
+  }
+
+  .safety-comic-head p {
+    font-size: 1rem;
+  }
+
+  .safety-comic-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .safety-comic-card.single img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .safety-comic-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+/* ============================================================
+   WARMUP CARDS - MOBILE OPTIMIZATION
+   ============================================================ */
+
+@media (max-width: 479px) {
+  .safety-warmup-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .safety-warmup-card {
+    min-height: 120px;
+    padding: 14px;
+    border-radius: 16px;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .safety-warmup-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .safety-warmup-card {
+    min-height: 130px;
+    padding: 16px;
+  }
+}

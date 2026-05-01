@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 
-app = FastAPI(title="FastAPI CRUD with JWT")
+app = FastAPI(title="Cifrograd")
 
 app.add_middleware(
     CORSMiddleware,
