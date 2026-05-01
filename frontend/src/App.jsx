@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { MobileOptimizer } from "./MobileOptimizer";
 import homeIcon from "./assets/sidebar-icons/home.png";
 import profileIcon from "./assets/sidebar-icons/profile.png";
 import leaderboardIcon from "./assets/sidebar-icons/leader-bord.png";
@@ -2551,10 +2550,7 @@ export default function App() {
     [profile?.achievements],
   );
 
-  useEffect(() => {
-    MobileOptimizer.init();
-  }, []);
-
+  
   useEffect(() => {
     if (!profile?.email || !unlockedAchievements.length) {
       return;
