@@ -33,6 +33,7 @@ const API_URL = import.meta.env.VITE_API_URL || "";
 const TOKEN_KEY = "access_token";
 const MIN_PASSWORD_LENGTH = 8;
 const BRAND_NAME = "ЦифроГрад";
+const TASKS_ROUTE = "/tasks";
 const SAFETY_MODULE_SLUG = "safe-internet";
 const FILE_LAB_MODULE_SLUG = "file-lab";
 const SMART_SEARCH_MODULE_SLUG = "smart-search";
@@ -2142,6 +2143,7 @@ function FileNamesMiniGame({
   onNext,
   onRestart,
   onContinue,
+  continueLabel = "Перейти к следующей части",
 }) {
   const currentRound = rounds[currentRoundIndex] || null;
   const currentAnswer = answers[currentRoundIndex];
@@ -2248,7 +2250,7 @@ function FileNamesMiniGame({
               Сыграть еще раз
             </button>
             <button className="primary-button" type="button" onClick={onContinue}>
-              Продолжить
+              {continueLabel}
             </button>
           </div>
         </div>
@@ -2266,7 +2268,7 @@ function FileNamesMiniGame({
   );
 }
 
-function FileCustomsGame({ rounds }) {
+function FileCustomsGame({ rounds, onComplete, continueLabel = "Перейти к следующей части" }) {
   const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(0);
@@ -2374,9 +2376,14 @@ function FileCustomsGame({ rounds }) {
               <strong>{title}</strong>
             </div>
           </div>
-          <button className="primary-button" type="button" onClick={resetGame}>
-            Пройти еще раз
-          </button>
+          <div className="filename-victory-actions">
+            <button className="ghost-button" type="button" onClick={resetGame}>
+              Пройти еще раз
+            </button>
+            <button className="primary-button" type="button" onClick={onComplete}>
+              {continueLabel}
+            </button>
+          </div>
         </section>
       ) : (
         <>
@@ -2525,6 +2532,7 @@ export default function App() {
   });
   const [defenseToast, setDefenseToast] = useState("");
   const [draggedDefenseIndex, setDraggedDefenseIndex] = useState(null);
+  const [selectedDefenseIndex, setSelectedDefenseIndex] = useState(null);
   const [activeDropzone, setActiveDropzone] = useState("");
   const [finalTestAnswers, setFinalTestAnswers] = useState({});
   const [finalQuestionIndex, setFinalQuestionIndex] = useState(0);
@@ -2621,6 +2629,7 @@ export default function App() {
       });
       setDefenseToast("");
       setDraggedDefenseIndex(null);
+      setSelectedDefenseIndex(null);
       setActiveDropzone("");
       setFinalTestAnswers({});
       setFinalQuestionIndex(0);
@@ -2664,6 +2673,7 @@ export default function App() {
     });
     setDefenseToast("");
     setDraggedDefenseIndex(null);
+    setSelectedDefenseIndex(null);
     setActiveDropzone("");
     setFinalTestAnswers({});
     setFinalQuestionIndex(0);
@@ -3072,6 +3082,9 @@ export default function App() {
         });
       }
       await loadDashboard();
+      if (data.correct) {
+        navigateTo(TASKS_ROUTE);
+      }
     } catch (error) {
       setDashboardError(error.message);
     }
@@ -3217,12 +3230,16 @@ export default function App() {
       return "/academy";
     }
 
+    if (selectedModule.slug === FILE_LAB_MODULE_SLUG && partId < enhancedModule.parts.length) {
+      return `/modules/${selectedModule.slug}/parts/${partId + 1}/game`;
+    }
+
     return partId === enhancedModule.parts.length
-      ? `/modules/${selectedModule.slug}`
+      ? TASKS_ROUTE
       : `/modules/${selectedModule.slug}/parts/${partId + 1}`;
   }
 
-  async function completeEnhancedModule(redirectPath = selectedModule ? `/modules/${selectedModule.slug}` : "/academy") {
+  async function completeEnhancedModule(redirectPath = TASKS_ROUTE) {
     if (!selectedModule) {
       return;
     }
@@ -3306,6 +3323,7 @@ export default function App() {
 
     setActiveDropzone("");
     setDraggedDefenseIndex(null);
+    setSelectedDefenseIndex(null);
 
     if (file.target === targetBucket) {
       setDefenseAnswers((current) => ({
@@ -3356,19 +3374,6 @@ export default function App() {
         [fileId]: folderId,
       }));
       setFolderSortHint("");
-
-      if (isComplete && selectedModule && enhancedModule) {
-        const nextPath = getEnhancedGameNextPath(currentEnhancedPart.id);
-
-        window.setTimeout(() => {
-          if (currentEnhancedPart.id === enhancedModule.parts.length) {
-            completeEnhancedModule(nextPath);
-            return;
-          }
-
-          navigateTo(nextPath);
-        }, 500);
-      }
 
       return;
     }
@@ -3436,6 +3441,7 @@ export default function App() {
         });
       }
       await loadDashboard();
+      navigateTo(TASKS_ROUTE);
     } catch (error) {
       setDashboardError(error.message);
     }
@@ -3920,8 +3926,22 @@ export default function App() {
     if (enhancedModule) {
       return (
         <section className="module-page safety-part-page">
-          <article className="panel module-overview-card module-overview-card-illustrated">
-            <img className="module-overview-image" src={getEnhancedModuleStartImage()} alt={selectedModule.title} />
+          <article
+            className={
+              selectedModule.slug === SAFETY_MODULE_SLUG
+                ? "panel module-overview-card module-overview-card-illustrated module1-overview-card"
+                : "panel module-overview-card module-overview-card-illustrated"
+            }
+          >
+            <img
+              className={
+                selectedModule.slug === SAFETY_MODULE_SLUG
+                  ? "module-overview-image module1-overview-image"
+                  : "module-overview-image"
+              }
+              src={getEnhancedModuleStartImage()}
+              alt={selectedModule.title}
+            />
             <button
               className="primary-button module-overview-start-button"
               type="button"
@@ -4075,7 +4095,13 @@ export default function App() {
       selectedModule?.slug === DIGITAL_ETHICS_MODULE_SLUG ? "hero-mascot hero-mascot-compact" : "hero-mascot";
 
     return (
-      <article className="panel safety-part-hero password-part-hero hero-card password-hero-card">
+      <article
+        className={
+          selectedModule?.slug === SAFETY_MODULE_SLUG
+            ? "panel safety-part-hero password-part-hero hero-card password-hero-card enhanced-module-part-hero safety-module-part-hero"
+            : "panel safety-part-hero password-part-hero hero-card password-hero-card enhanced-module-part-hero"
+        }
+      >
         <div className="password-hero-inner">
           <div className="safety-part-hero-copy hero-content">
             <button className="ghost-button back-button" type="button" onClick={() => navigateTo(`/modules/${selectedModule.slug}`)}>
@@ -4132,8 +4158,8 @@ export default function App() {
               <p>Иногда в интернете происходят странные вещи. Давай посмотрим на примере:</p>
             </div>
 
-            <div className="safety-comic-grid single">
-              <div className="safety-comic-card single">
+            <div className="safety-comic-grid single module1-part-comic-grid">
+              <div className="safety-comic-card single module1-part-comic-card">
                 <img src={module1Comic} alt="Комикс про опасности в интернете" />
               </div>
             </div>
@@ -4191,8 +4217,8 @@ export default function App() {
           {renderSafetyPartHero(currentEnhancedPart)}
 
           <article className="panel safety-comic-panel">
-            <div className="safety-comic-grid single">
-              <div className="safety-comic-card single">
+            <div className="safety-comic-grid single module1-part-comic-grid">
+              <div className="safety-comic-card single module1-part-comic-card">
                 <img src={module1Part2Comic} alt="Комикс про надёжный пароль" />
               </div>
             </div>
@@ -4251,8 +4277,8 @@ export default function App() {
 
         {selectedModule.slug === SAFETY_MODULE_SLUG && currentEnhancedPart.id === 3 ? (
           <article className="panel safety-comic-panel">
-            <div className="safety-comic-grid single">
-              <div className="safety-comic-card single">
+            <div className="safety-comic-grid single module1-part-comic-grid">
+              <div className="safety-comic-card single module1-part-comic-card">
                 <img src={module1Part3Comic} alt="Комикс про антивирус и обновления" />
               </div>
             </div>
@@ -4501,6 +4527,16 @@ export default function App() {
       : [];
 
     const nextPath = getEnhancedGameNextPath(currentEnhancedPart.id);
+    const isLastEnhancedPart = currentEnhancedPart.id === enhancedModule.parts.length;
+    const continueButtonLabel = isLastEnhancedPart ? "Завершить модуль" : "Перейти к следующей части";
+    const continueFromEnhancedGame = () => {
+      if (isLastEnhancedPart) {
+        completeEnhancedModule(nextPath);
+        return;
+      }
+
+      navigateTo(nextPath);
+    };
 
     const canProceed =
       (isDangerGame && dangerFoundCount >= dangerTotal) ||
@@ -4516,7 +4552,13 @@ export default function App() {
       <section className="module-page">
         {renderEnhancedModuleNav()}
 
-        <article className="panel safety-part-hero password-part-hero hero-card password-hero-card safety-game-hero">
+        <article
+          className={
+            selectedModule.slug === SAFETY_MODULE_SLUG
+              ? "panel safety-part-hero password-part-hero hero-card password-hero-card safety-game-hero enhanced-module-part-hero safety-module-part-hero"
+              : "panel safety-part-hero password-part-hero hero-card password-hero-card safety-game-hero enhanced-module-part-hero"
+          }
+        >
           <div className="password-hero-inner">
             <div className="safety-part-hero-copy hero-content safety-game-hero-copy">
               <button
@@ -4666,10 +4708,17 @@ export default function App() {
                   defenseAnswers[index] ? null : (
                     <button
                       key={scenario.name}
-                      className="defense-file-card"
+                      className={selectedDefenseIndex === index ? "defense-file-card defense-file-card-selected" : "defense-file-card"}
                       type="button"
                       draggable
-                      onDragStart={() => setDraggedDefenseIndex(index)}
+                      onClick={() => {
+                        setSelectedDefenseIndex((current) => (current === index ? null : index));
+                        setDefenseToast("");
+                      }}
+                      onDragStart={() => {
+                        setDraggedDefenseIndex(index);
+                        setSelectedDefenseIndex(null);
+                      }}
                       onDragEnd={() => {
                         setDraggedDefenseIndex(null);
                         setActiveDropzone("");
@@ -4687,7 +4736,9 @@ export default function App() {
                   className={
                     activeDropzone === "safe"
                       ? "defense-bin defense-bin-safe defense-bin-active"
-                      : "defense-bin defense-bin-safe"
+                      : selectedDefenseIndex !== null
+                        ? "defense-bin defense-bin-safe defense-bin-tap-ready"
+                        : "defense-bin defense-bin-safe"
                   }
                   onDragOver={(event) => {
                     event.preventDefault();
@@ -4698,6 +4749,11 @@ export default function App() {
                     event.preventDefault();
                     if (draggedDefenseIndex !== null) {
                       sortDefenseFile(draggedDefenseIndex, "safe");
+                    }
+                  }}
+                  onClick={() => {
+                    if (selectedDefenseIndex !== null) {
+                      sortDefenseFile(selectedDefenseIndex, "safe");
                     }
                   }}
                 >
@@ -4717,7 +4773,9 @@ export default function App() {
                   className={
                     activeDropzone === "suspicious"
                       ? "defense-bin defense-bin-danger defense-bin-active"
-                      : "defense-bin defense-bin-danger"
+                      : selectedDefenseIndex !== null
+                        ? "defense-bin defense-bin-danger defense-bin-tap-ready"
+                        : "defense-bin defense-bin-danger"
                   }
                   onDragOver={(event) => {
                     event.preventDefault();
@@ -4728,6 +4786,11 @@ export default function App() {
                     event.preventDefault();
                     if (draggedDefenseIndex !== null) {
                       sortDefenseFile(draggedDefenseIndex, "suspicious");
+                    }
+                  }}
+                  onClick={() => {
+                    if (selectedDefenseIndex !== null) {
+                      sortDefenseFile(selectedDefenseIndex, "suspicious");
                     }
                   }}
                 >
@@ -4856,8 +4919,8 @@ export default function App() {
               {folderSortComplete ? (
                 <div className="folder-sort-victory">
                   <strong>Отлично! Теперь у каждого файла есть свое место</strong>
-                  <button className="primary-button" type="button" onClick={() => navigateTo(nextPath)}>
-                    Продолжить
+                  <button className="primary-button" type="button" onClick={continueFromEnhancedGame}>
+                    {continueButtonLabel}
                   </button>
                 </div>
               ) : null}
@@ -4875,46 +4938,53 @@ export default function App() {
                 setFilenameQuizRound(0);
                 setFilenameQuizAnswers({});
               }}
-              onContinue={() => navigateTo(nextPath)}
+              onContinue={continueFromEnhancedGame}
+              continueLabel={continueButtonLabel}
             />
           ) : null}
 
-          {isFileCustomsGame ? <FileCustomsGame rounds={currentEnhancedPart.rounds || []} /> : null}
+          {isFileCustomsGame ? (
+            <FileCustomsGame
+              rounds={currentEnhancedPart.rounds || []}
+              onComplete={continueFromEnhancedGame}
+              continueLabel={continueButtonLabel}
+            />
+          ) : null}
 
           {isCleanQueryGame ? (
             <CleanQueryGame
               rounds={currentEnhancedPart.rounds || []}
-              onComplete={() => navigateTo(nextPath)}
+              onComplete={continueFromEnhancedGame}
             />
           ) : null}
 
           {isSourceCheckGame ? (
             <TrustSourceGame
-              onComplete={() => navigateTo(nextPath)}
+              onComplete={continueFromEnhancedGame}
             />
           ) : null}
 
           {isBuildTruthGame ? (
             <BuildTruthGame
-              onComplete={() => completeEnhancedModule(nextPath)}
+              onComplete={continueFromEnhancedGame}
             />
           ) : null}
 
           {isFixMessageGame ? (
             <FixMessageGame
-              onComplete={() => navigateTo(nextPath)}
+              onComplete={continueFromEnhancedGame}
             />
           ) : null}
 
           {isContentDetectiveGame ? (
             <ContentDetectiveGame
-              onComplete={() => navigateTo(nextPath)}
+              onComplete={continueFromEnhancedGame}
             />
           ) : null}
 
           {isCalmChatGame ? (
             <CalmChatGame
-              onComplete={() => completeEnhancedModule(nextPath)}
+              onComplete={continueFromEnhancedGame}
             />
           ) : null}
 
@@ -4957,13 +5027,13 @@ export default function App() {
               type="button"
               onClick={() => {
                 if (isDangerGame) {
-                  if (currentEnhancedPart.id === enhancedModule.parts.length) {
+                  if (isLastEnhancedPart) {
                     if (dangerFoundCount < dangerTotal) {
                       setDangerWarning("Сначала правильно разбери все сообщения.");
                       return;
                     }
 
-                    completeEnhancedModule(nextPath);
+                    continueFromEnhancedGame();
                     return;
                   }
 
@@ -4971,16 +5041,11 @@ export default function App() {
                   return;
                 }
 
-                if (currentEnhancedPart.id === enhancedModule.parts.length) {
-                  completeEnhancedModule(nextPath);
-                  return;
-                }
-
-                navigateTo(nextPath);
+                continueFromEnhancedGame();
               }}
               disabled={!canProceed}
             >
-              {currentEnhancedPart.id === enhancedModule.parts.length ? "Завершить модуль" : "Перейти к следующей части"}
+              {continueButtonLabel}
             </button>
           ) : null}
         </article>
@@ -5002,7 +5067,13 @@ export default function App() {
 
       return (
         <section className="module-page">
-          <article className="panel safety-part-hero password-part-hero hero-card password-hero-card safety-game-hero">
+          <article
+            className={
+              selectedModule.slug === SAFETY_MODULE_SLUG
+                ? "panel safety-part-hero password-part-hero hero-card password-hero-card safety-game-hero enhanced-module-part-hero safety-module-part-hero"
+                : "panel safety-part-hero password-part-hero hero-card password-hero-card safety-game-hero enhanced-module-part-hero"
+            }
+          >
             <div className="password-hero-inner">
               <div className="safety-part-hero-copy hero-content safety-game-hero-copy">
                 <button
